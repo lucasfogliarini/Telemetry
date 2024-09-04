@@ -10,9 +10,9 @@ namespace OpenTelemetry
 {
     public static class DependencyInjection
     {
-        public static void AddTelemetry(this IServiceCollection services)
+        public static void AddSignOz(this IServiceCollection services)
         {
-            services.AddOpenTelemetry()
+            services.ConfigureOpenTelemetry()
                 .WithTracing(tracing => tracing
                     .AddAspNetCoreInstrumentation()
                     //.AddOtlpExporter(otlpOptions =>
@@ -39,9 +39,9 @@ namespace OpenTelemetry
                 otlpOptions.Headers = formattedHeader;
             });
         }
-        private static OpenTelemetryBuilder AddOpenTelemetry(this IServiceCollection services)
+        private static OpenTelemetryBuilder ConfigureOpenTelemetry(this IServiceCollection services)
         {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+            var assemblyName = Assembly.GetEntryAssembly().GetName();
             var serviceVersion = assemblyName.Version?.ToString() ?? "unknown";
             return services.AddOpenTelemetry()
                 .ConfigureResource(r => r

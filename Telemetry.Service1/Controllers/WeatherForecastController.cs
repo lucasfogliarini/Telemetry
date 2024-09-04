@@ -1,31 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Telemetry.Service1.Controllers
+namespace Telemetry.Service1
 {
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class WeatherForecastController(ILogger<WeatherForecastController> logger) : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly ILogger<WeatherForecastController> _logger = logger;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        [HttpGet, Route("5")]
+        public IEnumerable<WeatherForecast> Get5WeatherForecasts()
         {
-            _logger = logger;
-        }
+            _logger.LogInformation("Get5WeatherForecasts");
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
-        {
+            new HttpClient().GetAsync("https://www.google.com");
+            new HttpClient().GetAsync("https://www.bora.org");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                TemperatureC = Random.Shared.Next(-20, 55)
+            })
+            .ToArray();
+        }
+
+        [HttpGet, Route("10")]
+        public IEnumerable<WeatherForecast> Get10WeatherForecasts()
+        {
+            _logger.LogInformation("Get10WeatherForecasts");
+            return Enumerable.Range(1, 10).Select(index => new WeatherForecast
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                TemperatureC = Random.Shared.Next(-20, 55)
             })
             .ToArray();
         }
