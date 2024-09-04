@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telemetry.Service1", "Telemetry.Service1\Telemetry.Service1.csproj", "{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telemetry.OpenTelemetry.SigNoz", "Telemetry.OpenTelemetry.SigNoz\Telemetry.OpenTelemetry.SigNoz.csproj", "{4D60D093-8B6A-40B8-AF63-013329A150BC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D60D093-8B6A-40B8-AF63-013329A150BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D60D093-8B6A-40B8-AF63-013329A150BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D60D093-8B6A-40B8-AF63-013329A150BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D60D093-8B6A-40B8-AF63-013329A150BC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D70AFEEB-6514-4E7F-88A4-C68A066B4D73}
+	EndGlobalSection
+EndGlobal
