@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSignOz();
+builder.Services.AddAzureMonitor();
 
 var app = builder.Build();
 
