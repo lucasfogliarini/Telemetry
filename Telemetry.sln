@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telemetry.Service1", "Telemetry.Service1\Telemetry.Service1.csproj", "{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telemetry.Service1", "Telemetry.Service1\Telemetry.Service1.csproj", "{D6E9A499-13DA-4AAE-A204-65F8D62B7C2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telemetry.OpenTelemetry.SigNoz", "Telemetry.OpenTelemetry.SigNoz\Telemetry.OpenTelemetry.SigNoz.csproj", "{4D60D093-8B6A-40B8-AF63-013329A150BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telemetry.OpenTelemetry.SigNoz", "Telemetry.OpenTelemetry.SigNoz\Telemetry.OpenTelemetry.SigNoz.csproj", "{4D60D093-8B6A-40B8-AF63-013329A150BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telemetry.OpenTelemetry.AzureMonitor", "Telemetry.OpenTelemetry.AzureMonitor\Telemetry.OpenTelemetry.AzureMonitor.csproj", "{2B4522FD-1C2C-4473-8023-42CBC60E866C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Telemetry.OpenTelemetry.AzureMonitor", "Telemetry.OpenTelemetry.AzureMonitor\Telemetry.OpenTelemetry.AzureMonitor.csproj", "{2B4522FD-1C2C-4473-8023-42CBC60E866C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telemetry.OpenTelemetry.Dynatrace", "Telemetry.OpenTelemetry.Dynatrace\Telemetry.OpenTelemetry.Dynatrace.csproj", "{DA505BC9-C1AE-494E-A9CA-B90BD9A98EB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{2B4522FD-1C2C-4473-8023-42CBC60E866C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B4522FD-1C2C-4473-8023-42CBC60E866C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B4522FD-1C2C-4473-8023-42CBC60E866C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA505BC9-C1AE-494E-A9CA-B90BD9A98EB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA505BC9-C1AE-494E-A9CA-B90BD9A98EB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA505BC9-C1AE-494E-A9CA-B90BD9A98EB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA505BC9-C1AE-494E-A9CA-B90BD9A98EB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

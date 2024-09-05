@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -10,45 +11,67 @@ namespace OpenTelemetry
 {
     public static class DependencyInjection
     {
-        public static void AddSignOz(this IServiceCollection services)
+        const string otlpEndpoint = "https://ingest.us.signoz.cloud:443";
+        const string signoz_key = "844c834d-398f-4416-9ee8-7c1b48c482e9";
+        public static void AddSigNoz(this IHostApplicationBuilder builder)
         {
-            services.ConfigureOpenTelemetry()
-                .WithTracing(tracing => tracing
-                    .AddAspNetCoreInstrumentation()
-                    //.AddOtlpExporter(otlpOptions =>
-                    //{
-                    //    otlpOptions.Endpoint = new Uri("http://localhost:4317");
-                    //})
-                    .AddSignOzCloud()
-                );
+            var resourceBuilder = ConfigureResourceBuilder();
+            builder
+                .Services
+                .AddOpenTelemetry()
+                .WithLogging(builder =>
+                {
+                    builder
+                        .SetResourceBuilder(resourceBuilder)
+                        .AddOtlpExporter((OtlpExporterOptions exporterOptions) =>
+                        {
+                            SetSigNozOtlp(exporterOptions);
+                        });
+                })
+                .WithTracing(builder =>
+                {
+                    builder
+                        .SetResourceBuilder(resourceBuilder)
+                        //.AddHttpClientInstrumentation()
+                        .AddAspNetCoreInstrumentation()
+                        .AddOtlpExporter(otlpOptions =>
+                        {
+                            SetSigNozOtlp(otlpOptions);
+                        });
+                })
+                .WithMetrics(builder =>
+                {
+                    builder.SetResourceBuilder(resourceBuilder)
+                        .AddAspNetCoreInstrumentation()
+                        .AddOtlpExporter((OtlpExporterOptions exporterOptions, MetricReaderOptions readerOptions) =>
+                        {
+                            SetSigNozOtlp(exporterOptions);
+                            readerOptions.TemporalityPreference = MetricReaderTemporalityPreference.Delta;
+                        });
+                });
         }
-        private static TracerProviderBuilder AddSignOzCloud(this TracerProviderBuilder builder)
+        private static void SetSigNozOtlp(OtlpExporterOptions otlpExporterOptions)
         {
-            return builder.AddOtlpExporter(otlpOptions =>
-            {
-                //SigNoz Cloud Endpoint
-                otlpOptions.Endpoint = new Uri("https://ingest.us.signoz.cloud:443");
+            otlpExporterOptions.Endpoint = new Uri($"{otlpEndpoint}");
+            otlpExporterOptions.Protocol = OtlpExportProtocol.Grpc;
 
-                otlpOptions.Protocol = OtlpExportProtocol.Grpc;
+            //SigNoz Cloud account Ingestion key
+            string headerKey = "signoz-access-token";
+            string headerValue = signoz_key;
 
-                //SigNoz Cloud account Ingestion key
-                string headerKey = "signoz-access-token";
-                string headerValue = "844c834d-398f-4416-9ee8-7c1b48c482e9";
-
-                string formattedHeader = $"{headerKey}={headerValue}";
-                otlpOptions.Headers = formattedHeader;
-            });
+            string formattedHeader = $"{headerKey}={headerValue}";
+            otlpExporterOptions.Headers = formattedHeader;
         }
-        private static OpenTelemetryBuilder ConfigureOpenTelemetry(this IServiceCollection services)
+        private static ResourceBuilder ConfigureResourceBuilder()
         {
             var assemblyName = Assembly.GetEntryAssembly().GetName();
             var serviceVersion = assemblyName.Version?.ToString() ?? "unknown";
-            return services.AddOpenTelemetry()
-                .ConfigureResource(r => r
-                .AddService(
+            var resourceBuilder = ResourceBuilder.CreateDefault();
+            return resourceBuilder.AddService(
                     serviceName: assemblyName.Name!,
                     serviceVersion: serviceVersion,
-                    serviceInstanceId: Environment.MachineName));
+                    serviceInstanceId: Environment.MachineName);
+
         }
     }
 }

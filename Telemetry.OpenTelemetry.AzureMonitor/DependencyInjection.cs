@@ -1,16 +1,16 @@
 ﻿using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using System.Reflection;
 
 namespace OpenTelemetry
 {
     public static class DependencyInjection
     {
-        public static void AddAzureMonitor(this IServiceCollection services)
+        public static void AddAzureMonitor(this IHostApplicationBuilder builder)
         {
-            services.ConfigureOpenTelemetry().UseAzureMonitor();
+            builder.Services.ConfigureOpenTelemetry().UseAzureMonitor();
         }
         private static OpenTelemetryBuilder ConfigureOpenTelemetry(this IServiceCollection services)
         {
