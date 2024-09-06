@@ -9,9 +9,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.AddSigNoz();
-builder.AddAzureMonitor();
-builder.AddDynatrace();
+builder.AddSigNozExporter();
+builder.AddAzureMonitorExporter();
+builder.AddDynatraceExporter();
 
 var app = builder.Build();
 

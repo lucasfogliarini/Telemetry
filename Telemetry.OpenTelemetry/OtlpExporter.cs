@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
@@ -7,25 +8,17 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace OpenTelemetry
 {
-    public static class DependencyInjection
+    public abstract class OtlpExporter(IHostApplicationBuilder builder)
     {
-        const string tokenInstructions = "Não há um token para adicionar o Dynatrace, veja essa documentação para obter um token válido: https://docs.dynatrace.com/docs/shortlink/otel-getstarted-otlpexport#authentication-export-to-activegate";
-        const string endpointConfigKey = "DynatraceOtlp:endpoint";
-        const string tokenConfigKey = "DynatraceOtlp:token";
+        protected IHostApplicationBuilder Builder { get; private set; } = builder;
 
-        public static void AddDynatrace(this IHostApplicationBuilder builder)
+        public void Build()
         {
-            var endpoint = builder.Configuration[endpointConfigKey]!;
-            var token = builder.Configuration[tokenConfigKey];
-            if(string.IsNullOrWhiteSpace(token))
-                throw new InvalidOperationException(tokenInstructions);
-
             var resourceBuilder = ConfigureResourceBuilder();
-            builder
+            Builder
                 .Services
                 .AddOpenTelemetry()
                 .WithTracing(builder =>
@@ -33,9 +26,9 @@ namespace OpenTelemetry
                     builder.SetResourceBuilder(resourceBuilder)
                             //.AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation()
-                            .AddOtlpExporter(otlpOptions =>
+                            .AddOtlpExporter(exporterOptions =>
                             {
-                                SetDynatraceOtlp(otlpOptions, endpoint, token, "v1/traces");
+                                AddOtlpExporter(exporterOptions, "traces");
                             });
                 })
                 .WithMetrics(builder =>
@@ -46,7 +39,7 @@ namespace OpenTelemetry
                         .AddAspNetCoreInstrumentation()
                         .AddOtlpExporter((OtlpExporterOptions exporterOptions, MetricReaderOptions readerOptions) =>
                         {
-                            SetDynatraceOtlp(exporterOptions, endpoint, token, "v1/metrics");
+                            AddOtlpExporter(exporterOptions, "metrics");
                             readerOptions.TemporalityPreference = MetricReaderTemporalityPreference.Delta;
                         });
                 })
@@ -56,17 +49,12 @@ namespace OpenTelemetry
                         .SetResourceBuilder(resourceBuilder)
                         .AddOtlpExporter((OtlpExporterOptions exporterOptions) =>
                         {
-                            SetDynatraceOtlp(exporterOptions, endpoint, token, "v1/logs");
+                            AddOtlpExporter(exporterOptions, "logs");
                         });
                 });
         }
-        private static void SetDynatraceOtlp(OtlpExporterOptions otlpExporterOptions, string endpoint, string token, string signalPath = "v1/traces")
-        {
-            otlpExporterOptions.Endpoint = new Uri($"{endpoint}/{signalPath}");
-            otlpExporterOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
-            otlpExporterOptions.Headers = $"Authorization=Api-Token {token}";
-        }
-        private static ResourceBuilder ConfigureResourceBuilder()
+        public abstract void AddOtlpExporter(OtlpExporterOptions exporterOptions, string signal);
+        private ResourceBuilder ConfigureResourceBuilder()
         {
             var assemblyName = Assembly.GetEntryAssembly().GetName();
             var serviceVersion = assemblyName.Version?.ToString() ?? "unknown";

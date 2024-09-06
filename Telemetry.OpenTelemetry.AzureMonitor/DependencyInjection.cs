@@ -8,7 +8,7 @@ namespace OpenTelemetry
 {
     public static class DependencyInjection
     {
-        public static void AddAzureMonitor(this IHostApplicationBuilder builder)
+        public static void AddAzureMonitorExporter(this IHostApplicationBuilder builder)
         {
             builder.Services.ConfigureOpenTelemetry().UseAzureMonitor();
         }
