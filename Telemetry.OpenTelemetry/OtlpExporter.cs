@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
@@ -24,37 +23,27 @@ namespace OpenTelemetry
                 .WithTracing(builder =>
                 {
                     builder.SetResourceBuilder(resourceBuilder)
-                            //.AddHttpClientInstrumentation()
                             .AddAspNetCoreInstrumentation()
-                            .AddOtlpExporter(exporterOptions =>
-                            {
-                                AddOtlpExporter(exporterOptions, "traces");
-                            });
+                            .AddHttpClientInstrumentation()
+                            .AddOtlpExporter();
                 })
                 .WithMetrics(builder =>
                 {
                     builder.SetResourceBuilder(resourceBuilder)
-                        //.AddRuntimeInstrumentation()
-                        //.AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation()
                         .AddAspNetCoreInstrumentation()
-                        .AddOtlpExporter((OtlpExporterOptions exporterOptions, MetricReaderOptions readerOptions) =>
-                        {
-                            AddOtlpExporter(exporterOptions, "metrics");
-                            readerOptions.TemporalityPreference = MetricReaderTemporalityPreference.Delta;
-                        });
+                        .AddHttpClientInstrumentation()
+                        .AddOtlpExporter();
                 })
                 .WithLogging(builder =>
                 {
                     builder
                         .SetResourceBuilder(resourceBuilder)
-                        .AddOtlpExporter((OtlpExporterOptions exporterOptions) =>
-                        {
-                            AddOtlpExporter(exporterOptions, "logs");
-                        });
+                        .AddOtlpExporter();
                 });
         }
         public abstract void AddOtlpExporter(OtlpExporterOptions exporterOptions, string signal);
-        private ResourceBuilder ConfigureResourceBuilder()
+        public static ResourceBuilder ConfigureResourceBuilder()
         {
             var assemblyName = Assembly.GetEntryAssembly().GetName();
             var serviceVersion = assemblyName.Version?.ToString() ?? "unknown";
