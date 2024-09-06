@@ -11,10 +11,15 @@ namespace OpenTelemetry
 {
     public static class DependencyInjection
     {
-        const string otlpEndpoint = "https://ingest.us.signoz.cloud:443";
-        const string signoz_key = "844c834d-398f-4416-9ee8-7c1b48c482e9";
+        const string tokenInstructions = "Não há um token para adicionar o SigNoz, veja essa documentação para obter um token válido: https://{your_env}.us.signoz.cloud/get-started/application-monitoring";
+        const string endpointConfigKey = "SigNozOtlp:endpoint";
+        const string tokenConfigKey = "SigNozOtlp:token";
         public static void AddSigNoz(this IHostApplicationBuilder builder)
         {
+            var endpoint = builder.Configuration[endpointConfigKey]!;
+            var token = builder.Configuration[tokenConfigKey];
+            if (string.IsNullOrWhiteSpace(token))
+                throw new InvalidOperationException(tokenInstructions);
             var resourceBuilder = ConfigureResourceBuilder();
             builder
                 .Services
@@ -25,7 +30,7 @@ namespace OpenTelemetry
                         .SetResourceBuilder(resourceBuilder)
                         .AddOtlpExporter((OtlpExporterOptions exporterOptions) =>
                         {
-                            SetSigNozOtlp(exporterOptions);
+                            SetSigNozOtlp(exporterOptions, endpoint, token);
                         });
                 })
                 .WithTracing(builder =>
@@ -34,9 +39,9 @@ namespace OpenTelemetry
                         .SetResourceBuilder(resourceBuilder)
                         //.AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation()
-                        .AddOtlpExporter(otlpOptions =>
+                        .AddOtlpExporter(exporterOptions =>
                         {
-                            SetSigNozOtlp(otlpOptions);
+                            SetSigNozOtlp(exporterOptions, endpoint, token);
                         });
                 })
                 .WithMetrics(builder =>
@@ -45,19 +50,18 @@ namespace OpenTelemetry
                         .AddAspNetCoreInstrumentation()
                         .AddOtlpExporter((OtlpExporterOptions exporterOptions, MetricReaderOptions readerOptions) =>
                         {
-                            SetSigNozOtlp(exporterOptions);
+                            SetSigNozOtlp(exporterOptions, endpoint, token);
                             readerOptions.TemporalityPreference = MetricReaderTemporalityPreference.Delta;
                         });
                 });
         }
-        private static void SetSigNozOtlp(OtlpExporterOptions otlpExporterOptions)
+        private static void SetSigNozOtlp(OtlpExporterOptions otlpExporterOptions, string endpoint, string token)
         {
-            otlpExporterOptions.Endpoint = new Uri($"{otlpEndpoint}");
+            otlpExporterOptions.Endpoint = new Uri(endpoint);
             otlpExporterOptions.Protocol = OtlpExportProtocol.Grpc;
 
-            //SigNoz Cloud account Ingestion key
             string headerKey = "signoz-access-token";
-            string headerValue = signoz_key;
+            string headerValue = token;
 
             string formattedHeader = $"{headerKey}={headerValue}";
             otlpExporterOptions.Headers = formattedHeader;

@@ -6,6 +6,7 @@ namespace Telemetry.Service1
     [Route("[controller]")]
     public class WeatherForecastController(ILogger<WeatherForecastController> logger) : ControllerBase
     {
+        readonly HttpClient httpClient = new();
         private readonly ILogger<WeatherForecastController> _logger = logger;
 
         [HttpGet, Route("5")]
@@ -13,8 +14,7 @@ namespace Telemetry.Service1
         {
             _logger.LogInformation("Get5WeatherForecasts");
 
-            new HttpClient().GetAsync("https://www.google.com");
-            new HttpClient().GetAsync("https://www.bora.org");
+            httpClient.GetAsync("https://bora.work");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -27,6 +27,7 @@ namespace Telemetry.Service1
         public IEnumerable<WeatherForecast> Get10WeatherForecasts()
         {
             _logger.LogInformation("Get10WeatherForecasts");
+            httpClient.GetAsync("https://inexistente.org");
             return Enumerable.Range(1, 10).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
