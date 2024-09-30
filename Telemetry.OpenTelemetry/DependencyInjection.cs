@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using System.Reflection;
 
 namespace OpenTelemetry
 {
@@ -14,19 +16,19 @@ namespace OpenTelemetry
         /// </summary>
         public static IHostApplicationBuilder UseOtlpExporter(this IHostApplicationBuilder builder)
         {
-            var resourceBuilder = OtlpExporter.ConfigureResourceBuilder();
             builder.Services
                 .AddOpenTelemetry()
+                .ConfigureResource(ConfigureTelemetryResource)
                 .WithTracing(builder =>
                 {
-                    builder.SetResourceBuilder(resourceBuilder)
-                            .AddAspNetCoreInstrumentation()
-                            .AddHttpClientInstrumentation()
-                            .AddOtlpExporter();
+                    builder
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddOtlpExporter();
                 })
                 .WithMetrics(builder =>
                 {
-                    builder.SetResourceBuilder(resourceBuilder)
+                    builder
                         .AddRuntimeInstrumentation()
                         .AddHttpClientInstrumentation()
                         .AddAspNetCoreInstrumentation()
@@ -34,25 +36,21 @@ namespace OpenTelemetry
                 })
                 .WithLogging(builder =>
                 {
-                    builder.SetResourceBuilder(resourceBuilder)
-                        .AddOtlpExporter();
+                    builder.AddOtlpExporter();
                 });
 
             return builder;
         }
 
-        public static IHostApplicationBuilder UseDynatraceExporter(this IHostApplicationBuilder builder)
+        private static void ConfigureTelemetryResource(ResourceBuilder resourceBuilder)
         {
-            var dynatraceExporter = new DynatraceExporter(builder);
-            dynatraceExporter.Build();
-            return builder;
-        }
-
-        public static IHostApplicationBuilder UseSigNozExporter(this IHostApplicationBuilder builder)
-        {
-            var sigNozExporter = new SigNozExporter(builder);
-            sigNozExporter.Build();
-            return builder;
+            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+            var serviceVersion = assemblyName.Version?.ToString() ?? "unknown";
+            resourceBuilder.AddService(
+                serviceName: assemblyName.Name!,
+                serviceVersion: serviceVersion,
+                serviceNamespace: assemblyName.Name!,
+                serviceInstanceId: Environment.MachineName);
         }
     }
 }

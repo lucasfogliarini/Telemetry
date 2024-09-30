@@ -11,8 +11,6 @@ builder.Services.AddSwaggerGen();
 
 builder.UseOtlpExporter();
 builder.AddAzureMonitorExporter();
-//builder.AddSigNozExporter();
-//builder.AddDynatraceExporter();
 
 var app = builder.Build();
 
