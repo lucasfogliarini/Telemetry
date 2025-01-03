@@ -9,7 +9,7 @@ OpenTelemetry é um conjunto de ferramentas, APIs e SDKs que facilitam a coleta 
 - **Padronização**: Um formato único para todos os dados de telemetria.
 - **Observabilidade completa**: Integração de traces, métricas e logs.
 - **Instrumentação automática**: Reduz a necessidade de códigos manuais.
-- **Compatibilidade**: Integra-se com ferramentas populares como Prometheus, Jaeger, Dynatrace e Datadog.
+- **Compatibilidade**: Integra-se com ferramentas populares como Azure Monitor, Dynatrace e Datadog.
 
 ---
 
